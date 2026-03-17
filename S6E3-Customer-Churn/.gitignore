@@ -1,1 +1,6 @@
 *.csv
+*.yaml
+*.pyc
+catboost_info
+*.py
+mlruns
