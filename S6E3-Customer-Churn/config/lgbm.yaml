@@ -1,17 +1,17 @@
 # Core & Learning Control
 boosting_type: gbdt
 num_leaves: 24
-max_depth: -1
-learning_rate: 0.05
-min_child_samples: 20
+max_depth: 6
+learning_rate: 0.01
+min_child_samples: 50
 min_child_weight: 0.001
 
 # Sampling & Regularization
-subsample: 0.8
+subsample: 0.7
 bagging_freq: 1
 colsample_bytree: 0.7
-reg_alpha: 0.1
-reg_lambda: 0.1
+reg_alpha: 0.5
+reg_lambda: 0.5
 
 # Objective & Environment
 objective: binary
@@ -19,7 +19,12 @@ metric:
   - auc
   - binary_logloss
 
+# 🔥 GPU settings
+device: gpu
+gpu_platform_id: 1
+gpu_device_id: 0
+
 # Others
 random_state: 42
 n_jobs: -1
-verbosity: -1
+verbosity: 100
