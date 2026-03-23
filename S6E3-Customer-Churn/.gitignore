@@ -3,4 +3,4 @@
 *.pyc
 catboost_info
 *.py
-mlruns
+wandb
