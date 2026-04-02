@@ -2,3 +2,5 @@
 *.pyc
 catboost_info
 *.py
+*.ipynb
+*.yaml
