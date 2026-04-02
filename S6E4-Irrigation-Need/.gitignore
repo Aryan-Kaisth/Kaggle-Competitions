@@ -1,1 +1,4 @@
 *.csv
+*.pyc
+catboost_info
+*.py
