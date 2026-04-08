@@ -1,8 +1,2 @@
 *.csv
 *.pyc
-catboost_info
-*.py
-*.ipynb
-*.yaml
-mlflow_artifacts
-*.png
