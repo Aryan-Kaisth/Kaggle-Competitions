@@ -5,3 +5,4 @@ catboost_info
 *.ipynb
 *.yaml
 mlflow_artifacts
+*.png
