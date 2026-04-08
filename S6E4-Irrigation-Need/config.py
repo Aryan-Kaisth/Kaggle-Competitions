@@ -1,0 +1,121 @@
+# config.py
+
+import os
+
+# --- Paths ---
+RAW_TRAIN       = os.path.join("data", "raw", "train.csv")
+RAW_TEST        = os.path.join("data", "raw", "test.csv")
+TRAIN_PATH      = os.path.join("data", "processed", "train_folded.csv")
+TEST_PATH       = os.path.join("data", "processed", "test.csv")
+OOF_DIR         = "oof"
+SUBMISSIONS_DIR = "submissions"
+
+# --- Extras ---
+TARGET       = "irrigation_need"
+TARGET_MAP   = {"Low": 0, "Medium": 1, "High": 2}
+ID_COL       = "id"
+EXCLUDE_COLS = {TARGET, ID_COL, "kfold"}
+
+# --- Cross Validation ---
+N_FOLDS = 5
+SEED    = 42
+
+# --- LightGBM ---
+LGBM_PARAMS = {
+    # Core
+    "objective": "multiclass",
+    "num_class": 3,
+    "boosting": "gbdt",
+    "data_sample_strategy": "goss",
+    "num_iterations": 5000,
+    "learning_rate": 0.01,
+    "device_type": "cpu",
+    "seed": 42,
+    "num_leaves": 31,
+    "num_threads": -1,
+    # Tree
+    "max_depth": 6,
+    "feature_fraction": 0.8,
+    "early_stopping_round": 100,
+    "lambda_l1": 0.1,
+    "lambda_l2": 0.05,
+    "verbosity": -1,
+    # IO
+    "max_bin": 255,
+    # Metric
+    "metric": ["multi_logloss"],
+}
+
+# --- XGBoost ---
+XGB_PARAMS = {
+    # General
+    "booster": "gbtree",
+    "device": "cuda",
+    "verbosity": 0,
+    "validate_parameters": True,
+    "num_boost_round": 5000,
+    "early_stopping_rounds": 100,
+    # Tree
+    "eta": 0.01,
+    "max_depth": 6,
+    "min_child_weight": 1,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "lambda": 1,
+    "alpha": 2,
+    "tree_method": "hist",
+    "grow_policy": "depthwise",
+    "max_leaves": 31,
+    "max_bin": 255,
+    # Task
+    "objective": "multi:softprob",
+    "num_class": 3,
+    "eval_metric": "mlogloss",
+    "seed": 42,
+}
+
+# --- CatBoost ---
+CATBOOST_PARAMS = {
+    # Core
+    "loss_function": "MultiClass",
+    "eval_metric": "Accuracy",
+    "iterations": 3000,
+    "learning_rate": 0.01,
+    "random_seed": 42,
+    "auto_class_weights": "Balanced",
+    # Regularization
+    "l2_leaf_reg": 3.0,
+    "depth": 6,
+    "min_data_in_leaf": 1,
+    # Categorical
+    "one_hot_max_size": 2,
+    # Bagging
+    "bootstrap_type": "Bayesian",
+    "bagging_temperature": 1.0,
+    # Training control
+    "early_stopping_rounds": 50,
+    "task_type": "GPU",
+    "devices": "0",
+    "verbose": 0,
+}
+
+# --- HistGBM ---
+HISTGBM_PARAMS = {
+    "loss": "log_loss",
+    "learning_rate": 0.01,
+    "max_iter": 3000,
+    "max_leaf_nodes": 31,
+    "max_depth": 8,
+    "min_samples_leaf": 20,
+    "l2_regularization": 0.5,
+    "max_features": 0.8,
+    "max_bins": 255,
+    "early_stopping": True,
+    "n_iter_no_change": 50,
+    "validation_fraction": 0.1,
+    "scoring": "accuracy",
+    "verbose": 0,
+    "random_state": 42,
+    "categorical_features": "from_dtype",
+    "class_weight": "balanced",
+}
