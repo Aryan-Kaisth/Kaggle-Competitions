@@ -3,12 +3,14 @@
 import os
 
 # --- Paths ---
-RAW_TRAIN       = os.path.join("data", "raw", "train.csv")
-RAW_TEST        = os.path.join("data", "raw", "test.csv")
-TRAIN_PATH      = os.path.join("data", "processed", "train_folded.csv")
-TEST_PATH       = os.path.join("data", "processed", "test.csv")
-OOF_DIR         = "oof"
-SUBMISSIONS_DIR = "submissions"
+RAW_TRAIN = os.path.join("data", "raw", "train.csv")
+RAW_TEST = os.path.join("data", "raw", "test.csv")
+TRAIN_PATH = os.path.join("data", "processed", "train_folded.csv")
+TEST_PATH = os.path.join("data", "processed", "test.csv")
+
+OOF_DIR = os.path.join("artifacts", "oof")
+SUBMISSIONS_DIR = os.path.join("artifacts", "submissions")
+TEST_PROBA_DIR = os.path.join("artifacts", "test_proba")
 
 # --- Extras ---
 TARGET       = "irrigation_need"
@@ -18,11 +20,18 @@ EXCLUDE_COLS = {TARGET, ID_COL, "kfold"}
 
 # --- Cross Validation ---
 N_FOLDS = 5
-SEED    = 42
+SEED = 42
+RUN = 'v0'
+
+# --- Feature Flags ---
+FEATURE_FLAGS = {
+    "ratios": False,
+    "numerical_interactions": False,
+    "categorical_interactions": False,
+}
 
 # --- LightGBM ---
 LGBM_PARAMS = {
-    # Core
     "objective": "multiclass",
     "num_class": 3,
     "boosting": "gbdt",
@@ -30,32 +39,27 @@ LGBM_PARAMS = {
     "num_iterations": 5000,
     "learning_rate": 0.01,
     "device_type": "cpu",
-    "seed": 42,
+    "seed": SEED,
     "num_leaves": 31,
     "num_threads": -1,
-    # Tree
     "max_depth": 6,
     "feature_fraction": 0.8,
     "early_stopping_round": 100,
     "lambda_l1": 0.1,
     "lambda_l2": 0.05,
     "verbosity": -1,
-    # IO
     "max_bin": 255,
-    # Metric
     "metric": ["multi_logloss"],
 }
 
 # --- XGBoost ---
 XGB_PARAMS = {
-    # General
     "booster": "gbtree",
     "device": "cuda",
     "verbosity": 0,
     "validate_parameters": True,
     "num_boost_round": 5000,
     "early_stopping_rounds": 100,
-    # Tree
     "eta": 0.01,
     "max_depth": 6,
     "min_child_weight": 1,
@@ -67,32 +71,26 @@ XGB_PARAMS = {
     "grow_policy": "depthwise",
     "max_leaves": 31,
     "max_bin": 255,
-    # Task
     "objective": "multi:softprob",
     "num_class": 3,
     "eval_metric": "mlogloss",
-    "seed": 42,
+    "seed": SEED,
 }
 
 # --- CatBoost ---
 CATBOOST_PARAMS = {
-    # Core
     "loss_function": "MultiClass",
     "eval_metric": "Accuracy",
     "iterations": 3000,
     "learning_rate": 0.01,
-    "random_seed": 42,
+    "random_seed": SEED,
     "auto_class_weights": "Balanced",
-    # Regularization
     "l2_leaf_reg": 3.0,
     "depth": 6,
     "min_data_in_leaf": 1,
-    # Categorical
     "one_hot_max_size": 2,
-    # Bagging
     "bootstrap_type": "Bayesian",
     "bagging_temperature": 1.0,
-    # Training control
     "early_stopping_rounds": 50,
     "task_type": "GPU",
     "devices": "0",
@@ -115,7 +113,32 @@ HISTGBM_PARAMS = {
     "validation_fraction": 0.1,
     "scoring": "accuracy",
     "verbose": 0,
-    "random_state": 42,
+    "random_state": SEED,
     "categorical_features": "from_dtype",
     "class_weight": "balanced",
+}
+
+# --- ExtraTrees ---
+EXTRATREES_PARAMS = {
+    "n_estimators": 1000,
+    "criterion": "gini",
+    "max_depth": 12,
+    "min_samples_split": 5,
+    "min_samples_leaf": 2,
+    "max_features": "sqrt",
+    "bootstrap": False,
+    "n_jobs": -1,
+    "random_state": SEED,
+    "class_weight": "balanced"
+}
+
+# --- LogisticRegression ---
+LOGISTIC_PARAMS = {
+    "C": 0.5,
+    "l1_ratio": 0.0,
+    "class_weight": 'balanced',
+    "random_state": SEED,
+    "solver": "lbfgs",
+    "max_iter": 2000,
+    "verbose": 0
 }
