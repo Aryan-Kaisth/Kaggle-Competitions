@@ -11,6 +11,7 @@ TEST_PATH = os.path.join("data", "processed", "test.csv")
 OOF_DIR = os.path.join("artifacts", "oof")
 SUBMISSIONS_DIR = os.path.join("artifacts", "submissions")
 TEST_PROBA_DIR = os.path.join("artifacts", "test_proba")
+PLOTS_DIR = os.path.join("artifacts", "plots_dump")
 
 # --- Extras ---
 TARGET       = "irrigation_need"
@@ -141,4 +142,39 @@ LOGISTIC_PARAMS = {
     "solver": "lbfgs",
     "max_iter": 2000,
     "verbose": 0
+}
+
+# --- XGB_TD --- 
+XGB_TD_PARAMS = {
+    'device': 'cuda',
+    'random_state': SEED,
+    'n_cv' : 1,
+    'n_refit': 0,
+    'n_repeats': 1,
+    'n_threads': 12,
+    'verbosity': 0,
+    'val_metric_name': '1-balanced_accuracy'
+}
+
+# --- LGBM_TD --- 
+LGBM_TD_PARAMS = {
+    'device': 'cpu',
+    'random_state': SEED,
+    'n_cv' : 1,
+    'n_refit': 0,
+    'n_repeats': 1,
+    'n_threads': 12,
+    'verbosity': 0,
+    'val_metric_name': '1-balanced_accuracy'
+}
+
+# --- CatBoost_TD --- 
+CatBoost_TD_PARAMS = {
+    'device': 'cpu',
+    'random_state': SEED,
+    'n_cv' : 1,
+    'n_refit': 0,
+    'n_repeats': 1,
+    'n_threads': 12,
+    'verbosity': 0,
 }
