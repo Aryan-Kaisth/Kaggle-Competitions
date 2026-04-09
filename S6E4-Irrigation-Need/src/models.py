@@ -1,12 +1,19 @@
 # src/models.py
-
 import numpy as np
 import lightgbm as lgb
 import xgboost as xgb
 import catboost as cb
-from sklearn.ensemble import HistGradientBoostingClassifier
+from sklearn.ensemble import HistGradientBoostingClassifier, ExtraTreesClassifier
 from sklearn.utils.class_weight import compute_class_weight
-
+from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from pytabkit import (
+    XGB_TD_Classifier, 
+    LGBM_TD_Classifier, 
+    CatBoost_TD_Classifier
+) 
 
 def _sample_weights(y_train, y_valid):
     """Balanced sample weights for train and validation sets."""
@@ -16,7 +23,6 @@ def _sample_weights(y_train, y_valid):
     train_w = np.array([weight_map.get(y, 1.0) for y in y_train])
     valid_w = np.array([weight_map.get(y, 1.0) for y in y_valid])
     return train_w, valid_w
-
 
 def _get_cat_cols(X):
     """Return categorical column names."""
@@ -28,7 +34,7 @@ def _cast_cats(X, cat_cols):
     if cat_cols:
         X[cat_cols] = X[cat_cols].astype("category")
 
-
+# GBDT Models
 def train_lgbm(X_train, X_valid, X_test, y_train, y_valid, params):
     params = params.copy()
     num_iterations = params.pop("num_iterations", 5000)
@@ -58,8 +64,7 @@ def train_lgbm(X_train, X_valid, X_test, y_train, y_valid, params):
 
     oof_preds  = model.predict(X_valid, num_iteration=model.best_iteration)
     test_preds = model.predict(X_test,  num_iteration=model.best_iteration)
-    return oof_preds, test_preds
-
+    return oof_preds, test_preds, model
 
 def train_xgb(X_train, X_valid, X_test, y_train, y_valid, params):
     params = params.copy()
@@ -86,10 +91,9 @@ def train_xgb(X_train, X_valid, X_test, y_train, y_valid, params):
         verbose_eval=False,
     )
 
-    oof_preds  = model.predict(dvalid, iteration_range=(0, model.best_iteration + 1))
+    oof_preds = model.predict(dvalid, iteration_range=(0, model.best_iteration + 1))
     test_preds = model.predict(dtest,  iteration_range=(0, model.best_iteration + 1))
-    return oof_preds, test_preds
-
+    return oof_preds, test_preds, model
 
 def train_catboost(X_train, X_valid, X_test, y_train, y_valid, params):
     params = params.copy()
@@ -100,7 +104,7 @@ def train_catboost(X_train, X_valid, X_test, y_train, y_valid, params):
 
     dtrain = cb.Pool(X_train, label=y_train, cat_features=cat_cols)
     dvalid = cb.Pool(X_valid, label=y_valid, cat_features=cat_cols)
-    dtest  = cb.Pool(X_test,                cat_features=cat_cols)
+    dtest  = cb.Pool(X_test, cat_features=cat_cols)
 
     model = cb.train(
         params=params,
@@ -109,14 +113,12 @@ def train_catboost(X_train, X_valid, X_test, y_train, y_valid, params):
         verbose=verbose,
     )
 
-    oof_preds  = model.predict(dvalid, prediction_type="Probability")[:, 1]
-    test_preds = model.predict(dtest,  prediction_type="Probability")[:, 1]
-    return oof_preds, test_preds
-
+    oof_preds = model.predict(dvalid, prediction_type="Probability")
+    test_preds = model.predict(dtest,  prediction_type="Probability")
+    return oof_preds, test_preds, model
 
 def train_histgbm(X_train, X_valid, X_test, y_train, y_valid, params):
     params = params.copy()
-    params.setdefault("class_weight", "balanced")
 
     cat_cols = _get_cat_cols(X_train)
     _cast_cats(X_train, cat_cols)
@@ -126,15 +128,113 @@ def train_histgbm(X_train, X_valid, X_test, y_train, y_valid, params):
     model = HistGradientBoostingClassifier(**params)
     model.fit(X_train, y_train)
 
-    oof_preds  = model.predict_proba(X_valid)[:, 1]
-    test_preds = model.predict_proba(X_test) [:, 1]
-    return oof_preds, test_preds
+    oof_preds  = model.predict_proba(X_valid)
+    test_preds = model.predict_proba(X_test)
+    return oof_preds, test_preds, model
 
+def train_extratrees(X_train, X_valid, X_test, y_train, y_valid, params):
+    X_train, X_valid, X_test = X_train.copy(), X_valid.copy(), X_test.copy()
+    
+    cat_cols = X_train.select_dtypes(include=['category', 'object']).columns.tolist()
+
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ('ohe', OneHotEncoder(handle_unknown='ignore', sparse_output=False, dtype=int), cat_cols)
+        ],
+        remainder='passthrough' 
+    )
+
+    model = Pipeline(steps=[
+        ('preprocessor', preprocessor),
+        ('classifier', ExtraTreesClassifier(**params))
+    ])
+
+    model.fit(X_train, y_train)
+    
+    oof_preds  = model.predict_proba(X_valid)
+    test_preds = model.predict_proba(X_test)
+    
+    return oof_preds, test_preds, model
+
+# Pytabkit Models
+def train_LGBM_TD(X_train, X_valid, X_test, y_train, y_valid, params):
+    params = params.copy()
+
+    cat_cols = _get_cat_cols(X_train)
+    _cast_cats(X_train, cat_cols)
+    _cast_cats(X_valid, cat_cols)
+    _cast_cats(X_test,  cat_cols)
+
+    model = LGBM_TD_Classifier(**params)
+    model.fit(X_train, y_train)
+
+    oof_preds  = model.predict_proba(X_valid)
+    test_preds = model.predict_proba(X_test)
+    return oof_preds, test_preds, model
+
+def train_XGB_TD(X_train, X_valid, X_test, y_train, y_valid, params):
+    params = params.copy()
+
+    cat_cols = _get_cat_cols(X_train)
+    _cast_cats(X_train, cat_cols)
+    _cast_cats(X_valid, cat_cols)
+    _cast_cats(X_test,  cat_cols)
+
+    model = XGB_TD_Classifier(**params)
+    model.fit(X_train, y_train)
+
+    oof_preds  = model.predict_proba(X_valid)
+    test_preds = model.predict_proba(X_test)
+    return oof_preds, test_preds, model
+
+def train_CatBoost_TD(X_train, X_valid, X_test, y_train, y_valid, params):
+    params = params.copy()
+
+    cat_cols = _get_cat_cols(X_train)
+
+    model = CatBoost_TD_Classifier(**params)
+    model.fit(X_train, y_train, cat_col_names=cat_cols)
+
+    oof_preds  = model.predict_proba(X_valid)
+    test_preds = model.predict_proba(X_test)
+    return oof_preds, test_preds, model
+
+
+# Linear Models 
+def train_logistic(X_train, X_valid, X_test, y_train, y_valid, params):
+    X_train, X_valid, X_test = X_train.copy(), X_valid.copy(), X_test.copy()
+    
+    cat_cols = X_train.select_dtypes(include=['category', 'object']).columns.tolist()
+    num_cols = X_train.select_dtypes(include=['number']).columns.tolist()
+
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ('ohe', OneHotEncoder(handle_unknown='ignore', sparse_output=False), cat_cols),
+            ('scaler', StandardScaler(), num_cols)
+        ]
+    )
+
+    model = Pipeline(steps=[
+        ('preprocessor', preprocessor),
+        ('classifier', LogisticRegression(**params))
+    ])
+
+    model.fit(X_train, y_train)
+    
+    oof_preds  = model.predict_proba(X_valid)
+    test_preds = model.predict_proba(X_test)
+    
+    return oof_preds, test_preds, model
 
 # Registry
 MODELS = {
-    "lgbm":      train_lgbm,
-    "xgb":       train_xgb,
-    "catboost":  train_catboost,
-    "histgbm":   train_histgbm,
+    "lgbm": train_lgbm,
+    "xgb": train_xgb,
+    "catboost": train_catboost,
+    "histgbm": train_histgbm,
+    "extratrees": train_extratrees,
+    "logistic": train_logistic,
+    "CatBoost_TD": train_CatBoost_TD,
+    "LGBM_TD": train_LGBM_TD,
+    "XGB_TD": train_XGB_TD
 }
