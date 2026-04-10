@@ -1,5 +1,4 @@
 # config.py
-
 import os
 
 # --- Paths ---
@@ -22,7 +21,7 @@ EXCLUDE_COLS = {TARGET, ID_COL, "kfold"}
 # --- Cross Validation ---
 N_FOLDS = 5
 SEED = 42
-RUN = 'v0'
+RUN = 'v1'
 
 # --- Feature Flags ---
 FEATURE_FLAGS = {
@@ -153,7 +152,8 @@ XGB_TD_PARAMS = {
     'n_repeats': 1,
     'n_threads': 12,
     'verbosity': 0,
-    'val_metric_name': '1-balanced_accuracy'
+    'val_metric_name': '1-balanced_accuracy',
+    'val_fraction': 0.0
 }
 
 # --- LGBM_TD --- 
@@ -165,7 +165,8 @@ LGBM_TD_PARAMS = {
     'n_repeats': 1,
     'n_threads': 12,
     'verbosity': 0,
-    'val_metric_name': '1-balanced_accuracy'
+    'val_metric_name': '1-balanced_accuracy',
+    'val_fraction': 0.0
 }
 
 # --- CatBoost_TD --- 
@@ -177,4 +178,25 @@ CatBoost_TD_PARAMS = {
     'n_repeats': 1,
     'n_threads': 12,
     'verbosity': 0,
+    'val_fraction': 0.0
+}
+
+Resnet_RTDL_D_PARAMS = {
+    "module_d_embedding": None,
+    "module_d": 256,
+    "module_d_hidden_factor": 2,
+    "module_n_layers": 4,
+    "verbose": 0,
+    "max_epochs": 2,
+    "batch_size": 256,
+    "es_patience": 16,
+    "device": 'cuda',
+    "random_state": SEED,
+    "n_cv": 1,
+    "n_refit": 0,
+    "n_repeats": 1,
+    "n_threads": 12,
+    "tmp_folder": 'tmp',
+    "verbosity": 0,
+    'val_fraction': 0.0
 }
