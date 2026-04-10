@@ -1,2 +1,6 @@
 *.csv
 *.pyc
+catboost_info
+*.png
+mlflow.db
+mlruns
