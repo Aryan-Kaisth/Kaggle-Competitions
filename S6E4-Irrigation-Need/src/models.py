@@ -1,4 +1,6 @@
 # src/models.py
+import os
+import gc
 import numpy as np
 import lightgbm as lgb
 import xgboost as xgb
@@ -12,8 +14,11 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from pytabkit import (
     XGB_TD_Classifier, 
     LGBM_TD_Classifier, 
-    CatBoost_TD_Classifier
-) 
+    CatBoost_TD_Classifier,
+    Resnet_RTDL_D_Classifier
+)
+
+from src.utils import suppress_stdout
 
 def _sample_weights(y_train, y_valid):
     """Balanced sample weights for train and validation sets."""
@@ -64,6 +69,10 @@ def train_lgbm(X_train, X_valid, X_test, y_train, y_valid, params):
 
     oof_preds  = model.predict(X_valid, num_iteration=model.best_iteration)
     test_preds = model.predict(X_test,  num_iteration=model.best_iteration)
+    
+    del dtrain, dvalid
+    gc.collect()
+    
     return oof_preds, test_preds, model
 
 def train_xgb(X_train, X_valid, X_test, y_train, y_valid, params):
@@ -93,6 +102,10 @@ def train_xgb(X_train, X_valid, X_test, y_train, y_valid, params):
 
     oof_preds = model.predict(dvalid, iteration_range=(0, model.best_iteration + 1))
     test_preds = model.predict(dtest,  iteration_range=(0, model.best_iteration + 1))
+    
+    del dtrain, dvalid, dtest
+    gc.collect()
+    
     return oof_preds, test_preds, model
 
 def train_catboost(X_train, X_valid, X_test, y_train, y_valid, params):
@@ -115,6 +128,10 @@ def train_catboost(X_train, X_valid, X_test, y_train, y_valid, params):
 
     oof_preds = model.predict(dvalid, prediction_type="Probability")
     test_preds = model.predict(dtest,  prediction_type="Probability")
+
+    del dtrain, dvalid, dtest
+    gc.collect()
+
     return oof_preds, test_preds, model
 
 def train_histgbm(X_train, X_valid, X_test, y_train, y_valid, params):
@@ -158,47 +175,46 @@ def train_extratrees(X_train, X_valid, X_test, y_train, y_valid, params):
 
 # Pytabkit Models
 def train_LGBM_TD(X_train, X_valid, X_test, y_train, y_valid, params):
-    params = params.copy()
-
     cat_cols = _get_cat_cols(X_train)
-    _cast_cats(X_train, cat_cols)
-    _cast_cats(X_valid, cat_cols)
-    _cast_cats(X_test,  cat_cols)
 
     model = LGBM_TD_Classifier(**params)
-    model.fit(X_train, y_train)
+    model.fit(X_train, y_train, X_valid, y_valid, cat_col_names=cat_cols)
 
     oof_preds  = model.predict_proba(X_valid)
     test_preds = model.predict_proba(X_test)
     return oof_preds, test_preds, model
 
 def train_XGB_TD(X_train, X_valid, X_test, y_train, y_valid, params):
-    params = params.copy()
-
     cat_cols = _get_cat_cols(X_train)
-    _cast_cats(X_train, cat_cols)
-    _cast_cats(X_valid, cat_cols)
-    _cast_cats(X_test,  cat_cols)
 
     model = XGB_TD_Classifier(**params)
-    model.fit(X_train, y_train)
+    model.fit(X_train, y_train, X_valid, y_valid, cat_col_names=cat_cols)
 
     oof_preds  = model.predict_proba(X_valid)
     test_preds = model.predict_proba(X_test)
     return oof_preds, test_preds, model
 
 def train_CatBoost_TD(X_train, X_valid, X_test, y_train, y_valid, params):
-    params = params.copy()
-
     cat_cols = _get_cat_cols(X_train)
 
     model = CatBoost_TD_Classifier(**params)
-    model.fit(X_train, y_train, cat_col_names=cat_cols)
+    model.fit(X_train, y_train, X_valid, y_valid, cat_col_names=cat_cols)
 
     oof_preds  = model.predict_proba(X_valid)
     test_preds = model.predict_proba(X_test)
     return oof_preds, test_preds, model
 
+def train_Resnet_RTDL_D(X_train, X_valid, X_test, y_train, y_valid, params):
+    cat_cols = _get_cat_cols(X_train)
+
+    model = Resnet_RTDL_D_Classifier(**params)
+
+    with suppress_stdout():
+        model.fit(X_train, y_train, X_valid, y_valid, cat_col_names=cat_cols)
+
+    oof_preds  = model.predict_proba(X_valid)
+    test_preds = model.predict_proba(X_test)
+    return oof_preds, test_preds, model
 
 # Linear Models 
 def train_logistic(X_train, X_valid, X_test, y_train, y_valid, params):
@@ -236,5 +252,6 @@ MODELS = {
     "logistic": train_logistic,
     "CatBoost_TD": train_CatBoost_TD,
     "LGBM_TD": train_LGBM_TD,
-    "XGB_TD": train_XGB_TD
+    "XGB_TD": train_XGB_TD,
+    "Resnet_RTDL_D": train_Resnet_RTDL_D
 }
