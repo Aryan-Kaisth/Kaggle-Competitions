@@ -5,9 +5,6 @@ import numpy as np
 from sklearn.metrics import balanced_accuracy_score
 import config
 import glob
-import io
-import sys
-from contextlib import contextmanager
 
 def read_csv_file(path: str) -> pd.DataFrame:
     print(f"Reading: {path}")
@@ -54,14 +51,3 @@ def load_predictions(directory: str, file_suffix: str, target_models: list[str] 
             
         predictions[model_name] = df
     return predictions
-
-@contextmanager
-def suppress_stdout():
-    """Redirects stdout to /dev/null — silences skorch/pytabkit print spam."""
-    with open(os.devnull, "w") as devnull:
-        old_stdout = sys.stdout
-        sys.stdout = devnull
-        try:
-            yield
-        finally:
-            sys.stdout = old_stdout
