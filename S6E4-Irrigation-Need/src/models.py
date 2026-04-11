@@ -15,10 +15,10 @@ from pytabkit import (
     XGB_TD_Classifier, 
     LGBM_TD_Classifier, 
     CatBoost_TD_Classifier,
-    Resnet_RTDL_D_Classifier
+    Resnet_RTDL_D_Classifier,
+    RealMLP_TD_Classifier,
+    TabM_D_Classifier
 )
-
-from src.utils import suppress_stdout
 
 def _sample_weights(y_train, y_valid):
     """Balanced sample weights for train and validation sets."""
@@ -209,8 +209,29 @@ def train_Resnet_RTDL_D(X_train, X_valid, X_test, y_train, y_valid, params):
 
     model = Resnet_RTDL_D_Classifier(**params)
 
-    with suppress_stdout():
-        model.fit(X_train, y_train, X_valid, y_valid, cat_col_names=cat_cols)
+    model.fit(X_train, y_train, X_valid, y_valid, cat_col_names=cat_cols)
+
+    oof_preds  = model.predict_proba(X_valid)
+    test_preds = model.predict_proba(X_test)
+    return oof_preds, test_preds, model
+
+def train_RealMLP_TD(X_train, X_valid, X_test, y_train, y_valid, params):
+    cat_cols = _get_cat_cols(X_train)
+
+    model = RealMLP_TD_Classifier(**params)
+
+    model.fit(X_train, y_train, X_valid, y_valid, cat_col_names=cat_cols)
+
+    oof_preds  = model.predict_proba(X_valid)
+    test_preds = model.predict_proba(X_test)
+    return oof_preds, test_preds, model
+
+def train_TabM_D(X_train, X_valid, X_test, y_train, y_valid, params):
+    cat_cols = _get_cat_cols(X_train)
+
+    model = TabM_D_Classifier(**params)
+
+    model.fit(X_train, y_train, X_valid, y_valid, cat_col_names=cat_cols)
 
     oof_preds  = model.predict_proba(X_valid)
     test_preds = model.predict_proba(X_test)
@@ -253,5 +274,7 @@ MODELS = {
     "CatBoost_TD": train_CatBoost_TD,
     "LGBM_TD": train_LGBM_TD,
     "XGB_TD": train_XGB_TD,
-    "Resnet_RTDL_D": train_Resnet_RTDL_D
+    "Resnet_RTDL_D": train_Resnet_RTDL_D,
+    "RealMLP_TD": train_RealMLP_TD,
+    "TabM_D": train_TabM_D
 }
