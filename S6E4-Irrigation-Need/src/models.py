@@ -3,7 +3,6 @@ import os
 import gc
 import numpy as np
 import lightgbm as lgb
-import xgboost as xgb
 import catboost as cb
 from sklearn.ensemble import HistGradientBoostingClassifier, ExtraTreesClassifier
 from sklearn.utils.class_weight import compute_class_weight
@@ -71,39 +70,6 @@ def train_lgbm(X_train, X_valid, X_test, y_train, y_valid, params):
     test_preds = model.predict(X_test,  num_iteration=model.best_iteration)
     
     del dtrain, dvalid
-    gc.collect()
-    
-    return oof_preds, test_preds, model
-
-def train_xgb(X_train, X_valid, X_test, y_train, y_valid, params):
-    params = params.copy()
-    num_boost_round    = params.pop("num_boost_round", 5000)
-    early_stopping     = params.pop("early_stopping_rounds", 100)
-
-    cat_cols = _get_cat_cols(X_train)
-    _cast_cats(X_train, cat_cols)
-    _cast_cats(X_valid, cat_cols)
-    _cast_cats(X_test,  cat_cols)
-
-    train_w, valid_w = _sample_weights(y_train, y_valid)
-
-    dtrain = xgb.DMatrix(X_train, label=y_train, weight=train_w, enable_categorical=True)
-    dvalid = xgb.DMatrix(X_valid, label=y_valid, weight=valid_w, enable_categorical=True)
-    dtest  = xgb.DMatrix(X_test,                                 enable_categorical=True)
-
-    model = xgb.train(
-        params=params,
-        dtrain=dtrain,
-        num_boost_round=num_boost_round,
-        evals=[(dtrain, "train"), (dvalid, "valid")],
-        early_stopping_rounds=early_stopping,
-        verbose_eval=False,
-    )
-
-    oof_preds = model.predict(dvalid, iteration_range=(0, model.best_iteration + 1))
-    test_preds = model.predict(dtest,  iteration_range=(0, model.best_iteration + 1))
-    
-    del dtrain, dvalid, dtest
     gc.collect()
     
     return oof_preds, test_preds, model
@@ -266,7 +232,6 @@ def train_logistic(X_train, X_valid, X_test, y_train, y_valid, params):
 # Registry
 MODELS = {
     "lgbm": train_lgbm,
-    "xgb": train_xgb,
     "catboost": train_catboost,
     "histgbm": train_histgbm,
     "extratrees": train_extratrees,
