@@ -185,9 +185,9 @@ Resnet_RTDL_D_PARAMS = {
     "module_d_embedding": None,
     "module_d": 256,
     "module_d_hidden_factor": 2,
-    "module_n_layers": 4,
+    "module_n_layers": 8,
     "verbose": 0,
-    "max_epochs": 2,
+    "max_epochs": 50,
     "batch_size": 256,
     "es_patience": 16,
     "device": 'cuda',
@@ -199,4 +199,55 @@ Resnet_RTDL_D_PARAMS = {
     "tmp_folder": 'tmp',
     "verbosity": 0,
     'val_fraction': 0.0
+}
+
+RealMLP_TD_PARAMS = {
+    "device": 'cuda',
+    "random_state": SEED,
+    "n_cv": 1,
+    "n_refit": 0,
+    "n_repeats": 1,
+    "val_fraction": 0.0,
+    "n_threads": 12,
+    "verbosity": 0,
+    "val_metric_name": '1-balanced_accuracy',
+    "n_epochs": 5,
+}
+
+TabM_D_PARAMS = {
+    "device": 'cuda',
+    "random_state": SEED,
+    "n_cv": 1,
+    "n_refit": 0,
+    "n_repeats": 1,
+    "val_fraction": 0.0,
+    "n_threads": 12,
+    "tmp_folder": None,
+    "verbosity": 0,
+
+    # architecture
+    "arch_type": 'tabm-mini',
+    "tabm_k": 32,
+    "num_emb_type": 'pwl',
+    "num_emb_n_bins": 48,
+
+    # training
+    "batch_size": 512,
+    "lr": None,
+    "weight_decay": None,
+    "n_epochs": 64,
+    "patience": 16,
+
+    # model size
+    "d_embedding": None,
+    "d_block": 128,
+    "n_blocks": 6,
+    "dropout": None,
+    "compile_model": False,
+    "allow_amp": True,
+    "tfms": None,
+    "gradient_clipping_norm": None,
+    "share_training_batches": False,
+    "val_metric_name": '1-balanced_accuracy',
+    "train_metric_name": None
 }
