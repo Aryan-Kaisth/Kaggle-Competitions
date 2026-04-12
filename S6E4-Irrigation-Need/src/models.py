@@ -16,11 +16,10 @@ from pytabkit import (
     CatBoost_TD_Classifier,
     Resnet_RTDL_D_Classifier,
     RealMLP_TD_Classifier,
-    TabM_D_Classifier
+    TabM_D_Classifier,
 )
 
 def _sample_weights(y_train, y_valid):
-    """Balanced sample weights for train and validation sets."""
     classes = np.unique(y_train)
     weights = compute_class_weight(class_weight="balanced", classes=classes, y=y_train)
     weight_map = dict(zip(classes, weights))
@@ -29,14 +28,13 @@ def _sample_weights(y_train, y_valid):
     return train_w, valid_w
 
 def _get_cat_cols(X):
-    """Return categorical column names."""
     return X.select_dtypes(include=["object", "category"]).columns.tolist()
 
+def _get_num_cols(X):
+    return X.select_dtypes(include=["number"]).columns.tolist()
 
 def _cast_cats(X, cat_cols):
-    """Cast known categorical columns to category dtype."""
-    if cat_cols:
-        X[cat_cols] = X[cat_cols].astype("category")
+    X[cat_cols] = X[cat_cols].astype("category")
 
 # GBDT Models
 def train_lgbm(X_train, X_valid, X_test, y_train, y_valid, params):
@@ -61,8 +59,7 @@ def train_lgbm(X_train, X_valid, X_test, y_train, y_valid, params):
         valid_sets=[dtrain, dvalid],
         valid_names=["train", "valid"],
         callbacks=[
-            lgb.early_stopping(stopping_rounds=early_stopping, verbose=False),
-            lgb.log_evaluation(period=0),
+            lgb.early_stopping(stopping_rounds=early_stopping, verbose=False)
         ],
     )
 
@@ -75,9 +72,6 @@ def train_lgbm(X_train, X_valid, X_test, y_train, y_valid, params):
     return oof_preds, test_preds, model
 
 def train_catboost(X_train, X_valid, X_test, y_train, y_valid, params):
-    params = params.copy()
-    params.setdefault("auto_class_weights", "Balanced")
-    verbose = params.pop("verbose", False)
 
     cat_cols = _get_cat_cols(X_train)
 
@@ -88,8 +82,7 @@ def train_catboost(X_train, X_valid, X_test, y_train, y_valid, params):
     model = cb.train(
         params=params,
         pool=dtrain,
-        eval_set=dvalid,
-        verbose=verbose,
+        eval_set=dvalid
     )
 
     oof_preds = model.predict(dvalid, prediction_type="Probability")
@@ -101,42 +94,11 @@ def train_catboost(X_train, X_valid, X_test, y_train, y_valid, params):
     return oof_preds, test_preds, model
 
 def train_histgbm(X_train, X_valid, X_test, y_train, y_valid, params):
-    params = params.copy()
-
-    cat_cols = _get_cat_cols(X_train)
-    _cast_cats(X_train, cat_cols)
-    _cast_cats(X_valid, cat_cols)
-    _cast_cats(X_test,  cat_cols)
-
     model = HistGradientBoostingClassifier(**params)
     model.fit(X_train, y_train)
 
     oof_preds  = model.predict_proba(X_valid)
     test_preds = model.predict_proba(X_test)
-    return oof_preds, test_preds, model
-
-def train_extratrees(X_train, X_valid, X_test, y_train, y_valid, params):
-    X_train, X_valid, X_test = X_train.copy(), X_valid.copy(), X_test.copy()
-    
-    cat_cols = X_train.select_dtypes(include=['category', 'object']).columns.tolist()
-
-    preprocessor = ColumnTransformer(
-        transformers=[
-            ('ohe', OneHotEncoder(handle_unknown='ignore', sparse_output=False, dtype=int), cat_cols)
-        ],
-        remainder='passthrough' 
-    )
-
-    model = Pipeline(steps=[
-        ('preprocessor', preprocessor),
-        ('classifier', ExtraTreesClassifier(**params))
-    ])
-
-    model.fit(X_train, y_train)
-    
-    oof_preds  = model.predict_proba(X_valid)
-    test_preds = model.predict_proba(X_test)
-    
     return oof_preds, test_preds, model
 
 # Pytabkit Models
@@ -174,7 +136,6 @@ def train_Resnet_RTDL_D(X_train, X_valid, X_test, y_train, y_valid, params):
     cat_cols = _get_cat_cols(X_train)
 
     model = Resnet_RTDL_D_Classifier(**params)
-
     model.fit(X_train, y_train, X_valid, y_valid, cat_col_names=cat_cols)
 
     oof_preds  = model.predict_proba(X_valid)
@@ -185,7 +146,6 @@ def train_RealMLP_TD(X_train, X_valid, X_test, y_train, y_valid, params):
     cat_cols = _get_cat_cols(X_train)
 
     model = RealMLP_TD_Classifier(**params)
-
     model.fit(X_train, y_train, X_valid, y_valid, cat_col_names=cat_cols)
 
     oof_preds  = model.predict_proba(X_valid)
@@ -196,19 +156,18 @@ def train_TabM_D(X_train, X_valid, X_test, y_train, y_valid, params):
     cat_cols = _get_cat_cols(X_train)
 
     model = TabM_D_Classifier(**params)
-
     model.fit(X_train, y_train, X_valid, y_valid, cat_col_names=cat_cols)
 
     oof_preds  = model.predict_proba(X_valid)
     test_preds = model.predict_proba(X_test)
     return oof_preds, test_preds, model
 
-# Linear Models 
+# Logistic Regression 
 def train_logistic(X_train, X_valid, X_test, y_train, y_valid, params):
     X_train, X_valid, X_test = X_train.copy(), X_valid.copy(), X_test.copy()
     
-    cat_cols = X_train.select_dtypes(include=['category', 'object']).columns.tolist()
-    num_cols = X_train.select_dtypes(include=['number']).columns.tolist()
+    cat_cols = _get_cat_cols(X_train)
+    num_cols = _get_num_cols(X_train)
 
     preprocessor = ColumnTransformer(
         transformers=[
@@ -228,18 +187,3 @@ def train_logistic(X_train, X_valid, X_test, y_train, y_valid, params):
     test_preds = model.predict_proba(X_test)
     
     return oof_preds, test_preds, model
-
-# Registry
-MODELS = {
-    "lgbm": train_lgbm,
-    "catboost": train_catboost,
-    "histgbm": train_histgbm,
-    "extratrees": train_extratrees,
-    "logistic": train_logistic,
-    "CatBoost_TD": train_CatBoost_TD,
-    "LGBM_TD": train_LGBM_TD,
-    "XGB_TD": train_XGB_TD,
-    "Resnet_RTDL_D": train_Resnet_RTDL_D,
-    "RealMLP_TD": train_RealMLP_TD,
-    "TabM_D": train_TabM_D
-}
