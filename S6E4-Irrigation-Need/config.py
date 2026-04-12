@@ -1,34 +1,26 @@
-# config.py
+# py
 import os
 
 # --- Paths ---
 RAW_TRAIN = os.path.join("data", "raw", "train.csv")
 RAW_TEST = os.path.join("data", "raw", "test.csv")
-TRAIN_PATH = os.path.join("data", "processed", "train_folded.csv")
-TEST_PATH = os.path.join("data", "processed", "test.csv")
 
 OOF_DIR = os.path.join("artifacts", "oof")
 SUBMISSIONS_DIR = os.path.join("artifacts", "submissions")
 TEST_PROBA_DIR = os.path.join("artifacts", "test_proba")
+
 PLOTS_DIR = os.path.join("artifacts", "plots_dump")
+MODELS_DIR = os.path.join("artifacts", "models_dump")
 
 # --- Extras ---
 TARGET = "irrigation_need"
 TARGET_MAP = {"Low": 0, "Medium": 1, "High": 2}
 ID_COL = "id"
-EXCLUDE_COLS = {TARGET, ID_COL, "kfold"}
 
 # --- Cross Validation ---
 N_FOLDS = 5
 SEED = 42
-RUN = 'v0'
-
-# --- Feature Flags ---
-FEATURE_FLAGS = {
-    "ratios": False,
-    "numerical_interactions": False,
-    "categorical_interactions": False,
-}
+RUN = 'vtest'
 
 # --- LightGBM ---
 LGBM_PARAMS = {
@@ -95,9 +87,9 @@ HISTGBM_PARAMS = {
 
 # --- ExtraTrees ---
 EXTRATREES_PARAMS = {
-    "n_estimators": 1000,
+    "n_estimators": 3000,
     "criterion": "gini",
-    "max_depth": 12,
+    "max_depth": 6,
     "min_samples_split": 5,
     "min_samples_leaf": 2,
     "max_features": "sqrt",
@@ -108,6 +100,7 @@ EXTRATREES_PARAMS = {
 }
 
 # --- LogisticRegression ---
+
 LOGISTIC_PARAMS = {
     "C": 0.5,
     "l1_ratio": 0.0,
@@ -160,11 +153,11 @@ Resnet_RTDL_D_PARAMS = {
     "module_d_embedding": None,
     "module_d": 256,
     "module_d_hidden_factor": 2,
-    "module_n_layers": 8,
+    "module_n_layers": 6,
     "verbose": 0,
-    "max_epochs": 16,
-    "batch_size": 256,
-    "es_patience": 16,
+    "max_epochs": 5,
+    "batch_size": 512,
+    "es_patience": 5,
     "device": 'cuda',
     "random_state": SEED,
     "n_cv": 1,
@@ -172,7 +165,7 @@ Resnet_RTDL_D_PARAMS = {
     "n_repeats": 1,
     "n_threads": 12,
     "tmp_folder": 'tmp',
-    "verbosity": 0,
+    "verbosity": 1,
     'val_fraction': 0.0
 }
 
@@ -198,7 +191,7 @@ TabM_D_PARAMS = {
     "val_fraction": 0.0,
     "n_threads": 12,
     "tmp_folder": None,
-    "verbosity": 0,
+    "verbosity": 1,
 
     # architecture
     "arch_type": 'tabm-mini-normal',
@@ -210,7 +203,7 @@ TabM_D_PARAMS = {
     "batch_size": 512,
     "lr": None,
     "weight_decay": None,
-    "n_epochs": 5, #---
+    "n_epochs": 24,
     "patience": 16,
 
     # model size
