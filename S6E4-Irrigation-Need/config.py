@@ -10,11 +10,11 @@ SUBMISSIONS_DIR = os.path.join("artifacts", "submissions")
 TEST_PROBA_DIR = os.path.join("artifacts", "test_proba")
 
 PLOTS_DIR = os.path.join("artifacts", "plots_dump")
-MODELS_DIR = os.path.join("artifacts", "models_dump")
 
 # --- Extras ---
 TARGET = "irrigation_need"
 TARGET_MAP = {"Low": 0, "Medium": 1, "High": 2}
+TARGET_MAP_INV = {0: "Low", 1: "Medium", 2: "High"}
 ID_COL = "id"
 
 # --- Cross Validation ---
@@ -41,7 +41,7 @@ LGBM_PARAMS = {
     "lambda_l2": 0.05,
     "verbosity": -1,
     "max_bin": 255,
-    "metric": ["multi_logloss"],
+    "metric": ["multi_logloss"]
 }
 
 # --- CatBoost ---
