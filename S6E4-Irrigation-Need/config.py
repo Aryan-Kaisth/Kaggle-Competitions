@@ -17,6 +17,29 @@ TARGET_MAP = {"Low": 0, "Medium": 1, "High": 2}
 TARGET_MAP_INV = {0: "Low", 1: "Medium", 2: "High"}
 ID_COL = "id"
 
+BASE_NUM_COLS = [
+    'soil_ph',
+    'soil_moisture',
+    'organic_carbon',
+    'electrical_conductivity',
+    'temperature_c',
+    'humidity',
+    'rainfall_mm',
+    'sunlight_hours',
+    'wind_speed_kmh',
+    'field_area_hectare',
+    'previous_irrigation_mm']
+
+BASE_CAT_COLS = [
+    'soil_type',
+    'crop_type',
+    'crop_growth_stage',
+    'season',
+    'irrigation_type',
+    'water_source',
+    'mulching_used',
+    'region']
+
 # --- Cross Validation ---
 N_FOLDS = 5
 SEED = 42
@@ -62,6 +85,7 @@ CATBOOST_PARAMS = {
     "task_type": "GPU",
     "devices": "0",
     "verbose": 0,
+    "use_best_model": True
 }
 
 # --- HistGBM ---
@@ -139,7 +163,7 @@ LGBM_TD_PARAMS = {
 
 # --- CatBoost_TD --- 
 CatBoost_TD_PARAMS = {
-    'device': 'cpu',
+    'device': 'cuda',
     'random_state': SEED,
     'n_cv' : 1,
     'n_refit': 0,
@@ -151,13 +175,14 @@ CatBoost_TD_PARAMS = {
 
 Resnet_RTDL_D_PARAMS = {
     "module_d_embedding": None,
-    "module_d": 256,
+    "module_d": 64,
     "module_d_hidden_factor": 2,
-    "module_n_layers": 6,
-    "verbose": 0,
-    "max_epochs": 5,
+    "module_n_layers": 8,
+    "verbose": 1,
+    "max_epochs": 32,
     "batch_size": 512,
     "es_patience": 5,
+    "use_checkpoints": True,
     "device": 'cuda',
     "random_state": SEED,
     "n_cv": 1,
