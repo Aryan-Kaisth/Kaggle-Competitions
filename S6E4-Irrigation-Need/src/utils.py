@@ -52,3 +52,40 @@ def save_object(obj: object, path: str) -> None:
     with open(path, "wb") as file_obj:
         joblib.dump(obj, file_obj)
         print(f'Object saved to {path}')
+
+def reduce_mem_usage(df: pd.DataFrame, inplace: bool = False) -> pd.DataFrame:
+    if not inplace:
+        df = df.copy()
+    
+    numerics = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
+    
+    start_mem = df.memory_usage(deep=True).sum() / 1024 ** 2
+    print(f"Memory before: {start_mem:.2f} MB")
+
+    for col in df.columns:
+        col_type = df[col].dtype
+        
+        if col_type.name not in numerics:
+            continue
+            
+        has_nan = df[col].isnull().any()
+        c_min   = df[col].min()
+        c_max   = df[col].max()
+
+        if str(col_type)[:3] == 'int' and not has_nan:
+            if   c_min > np.iinfo(np.int8).min  and c_max < np.iinfo(np.int8).max:
+                df[col] = df[col].astype(np.int8)
+            elif c_min > np.iinfo(np.int16).min and c_max < np.iinfo(np.int16).max:
+                df[col] = df[col].astype(np.int16)
+            elif c_min > np.iinfo(np.int32).min and c_max < np.iinfo(np.int32).max:
+                df[col] = df[col].astype(np.int32)
+
+        else:
+            if c_min > np.finfo(np.float32).min and c_max < np.finfo(np.float32).max:
+                df[col] = df[col].astype(np.float32)
+
+    end_mem = df.memory_usage(deep=True).sum() / 1024 ** 2
+    print(f"Memory after: {end_mem:.2f} MB")
+    print(f"Reduced by: {start_mem - end_mem:.2f} MB ({100 * (start_mem - end_mem) / start_mem:.1f}%)")
+
+    return df
