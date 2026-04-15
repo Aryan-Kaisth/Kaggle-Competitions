@@ -8,6 +8,7 @@ RAW_TEST = os.path.join("data", "raw", "test.csv")
 OOF_DIR = os.path.join("artifacts", "oof")
 SUBMISSIONS_DIR = os.path.join("artifacts", "submissions")
 TEST_PROBA_DIR = os.path.join("artifacts", "test_proba")
+RESIDUAL_DIR = os.path.join("artifacts", "residuals")
 
 PLOTS_DIR = os.path.join("artifacts", "plots_dump")
 
@@ -43,6 +44,7 @@ BASE_CAT_COLS = [
 # --- Cross Validation ---
 N_FOLDS = 5
 SEED = 42
+SEED_LIST = [42, 71, 84, 69, 91]
 RUN = 'vtest'
 
 # --- LightGBM ---
@@ -70,7 +72,7 @@ LGBM_PARAMS = {
 # --- CatBoost ---
 CATBOOST_PARAMS = {
     "loss_function": "MultiClass",
-    "eval_metric": "Accuracy",
+    "eval_metric": "TotalF1",
     "iterations": 5000,
     "learning_rate": 0.01,
     "random_seed": SEED,
@@ -88,25 +90,44 @@ CATBOOST_PARAMS = {
     "use_best_model": True
 }
 
+# CatBoost ORDERED
+CATBOOST_ORDERED_PARAMS = {
+    "loss_function": "MultiClass",
+    "eval_metric": "MultiClass",
+    "boosting_type": "Ordered",
+    "iterations": 4000,
+    "learning_rate": 0.05,
+    "random_seed": SEED,
+    "auto_class_weights": "Balanced",
+    "l2_leaf_reg": 1.5,
+    "depth": 4,
+    "one_hot_max_size": 5,
+    "bootstrap_type": "MVS",
+    "early_stopping_rounds": 50,
+    "random_strength": 1.0,
+    "task_type": "CPU",
+    "devices": "0",
+    "verbose": 0,
+    "use_best_model": True
+}
+
 # --- HistGBM ---
 HISTGBM_PARAMS = {
     "loss": "log_loss",
     "learning_rate": 0.01,
-    "max_iter": 5000,
+    "max_iter": 1000,
     "max_leaf_nodes": 31,
     "max_depth": 6,
     "min_samples_leaf": 20,
-    "l2_regularization": 0.5,
-    "max_features": 0.8,
+    "l2_regularization": 0.05,
+    "max_features": 0.6,
     "max_bins": 255,
-    "early_stopping": True,
-    "n_iter_no_change": 50,
-    "validation_fraction": 0.1,
-    "scoring": "accuracy",
+    "early_stopping": False,
+    "validation_fraction": None,
     "verbose": 0,
     "random_state": SEED,
     "categorical_features": "from_dtype",
-    "class_weight": "balanced",
+    "class_weight": None
 }
 
 # --- ExtraTrees ---
@@ -135,6 +156,22 @@ LOGISTIC_PARAMS = {
     "verbose": 0
 }
 
+SGD_PARAMS = {
+    "loss": "log_loss",
+    "penalty": "l2",
+    "alpha": 1e-5,
+    "max_iter": 5000,
+    "tol": 1e-4,
+    "shuffle": True,
+    "verbose": 0,
+    "n_jobs": -1,
+    "random_state": SEED,
+    "learning_rate": "optimal",
+    "early_stopping": False,
+    "class_weight": 'balanced',
+    "average": True
+}
+
 # --- XGB_TD --- 
 XGB_TD_PARAMS = {
     'device': 'cuda',
@@ -142,10 +179,29 @@ XGB_TD_PARAMS = {
     'n_cv' : 1,
     'n_refit': 0,
     'n_repeats': 1,
+    'val_fraction': 0.0,
     'n_threads': 12,
     'verbosity': 0,
+    'train_metric_name': 'cross_entropy',
     'val_metric_name': '1-balanced_accuracy',
-    'val_fraction': 0.0
+    'n_estimators': None,
+    "max_depth": None,
+    "lr": None,
+    "subsample": None,
+    "colsample_bytree": None,
+    "colsample_bylevel": None,
+    "colsample_bynode": None,
+    "min_child_weight": None,
+    "alpha": None,
+    "reg_lambda": None,
+    "gamma": None,
+    "tree_method": None,
+    "max_delta_step": None,
+    "max_cat_to_onehot": None,
+    "num_parallel_tree": None,
+    "max_bin": None,
+    "multi_strategy": None,
+    "calibration_method": None
 }
 
 # --- LGBM_TD --- 
@@ -158,18 +214,6 @@ LGBM_TD_PARAMS = {
     'n_threads': 12,
     'verbosity': 0,
     'val_metric_name': '1-balanced_accuracy',
-    'val_fraction': 0.0
-}
-
-# --- CatBoost_TD --- 
-CatBoost_TD_PARAMS = {
-    'device': 'cuda',
-    'random_state': SEED,
-    'n_cv' : 1,
-    'n_refit': 0,
-    'n_repeats': 1,
-    'n_threads': 12,
-    'verbosity': 0,
     'val_fraction': 0.0
 }
 
