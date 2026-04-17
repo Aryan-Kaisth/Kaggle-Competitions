@@ -8,9 +8,6 @@ RAW_TEST = os.path.join("data", "raw", "test.csv")
 OOF_DIR = os.path.join("artifacts", "oof")
 SUBMISSIONS_DIR = os.path.join("artifacts", "submissions")
 TEST_PROBA_DIR = os.path.join("artifacts", "test_proba")
-RESIDUAL_DIR = os.path.join("artifacts", "residuals")
-
-PLOTS_DIR = os.path.join("artifacts", "plots_dump")
 
 # --- Extras ---
 TARGET = "irrigation_need"
@@ -45,7 +42,6 @@ BASE_CAT_COLS = [
 N_FOLDS = 5
 SEED = 42
 SEED_LIST = [42, 71, 84, 69, 91]
-RUN = 'vtest'
 
 # --- LightGBM ---
 LGBM_PARAMS = {
@@ -147,12 +143,10 @@ EXTRATREES_PARAMS = {
 # --- LogisticRegression ---
 
 LOGISTIC_PARAMS = {
-    "C": 0.5,
-    "l1_ratio": 0.0,
     "class_weight": 'balanced',
     "random_state": SEED,
     "solver": "lbfgs",
-    "max_iter": 2000,
+    "max_iter": 10000,
     "verbose": 0
 }
 
