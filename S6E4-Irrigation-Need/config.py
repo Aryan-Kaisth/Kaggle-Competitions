@@ -144,7 +144,7 @@ LOGISTIC_PARAMS = {
     "class_weight": 'balanced',
     "random_state": SEED,
     "solver": "lbfgs",
-    "max_iter": 10000,
+    "max_iter": 6000,
     "verbose": 0
 }
 
