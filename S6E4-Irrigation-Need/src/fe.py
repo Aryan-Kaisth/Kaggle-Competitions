@@ -4,17 +4,33 @@ import numpy as np
 from sklearn.preprocessing import PolynomialFeatures
 from scipy.stats import rankdata
 
-def create_ratio(X, num_cols):
+def create_num_interactions(X, num_cols, ops=("mul", "div", "add", "sub")):
     X = X.copy()
     new_cols = []
-    eps = 1e-7
     
     for c1, c2 in itertools.combinations(num_cols, 2):
-        col = f"{c1}_div_{c2}"
-        X[col] = X[c1].values / (X[c2].values + eps)
-        new_cols.append(col)
+        
+        if "mul" in ops:
+            col = f"{c1}_{c2}_mul"
+            X[col] = X[c1] * X[c2]
+            new_cols.append(col)
+        
+        if "div" in ops:
+            col = f"{c1}_{c2}_div"
+            X[col] = X[c1] / (X[c2] + 1e-6)
+            new_cols.append(col)
+        
+        if "add" in ops:
+            col = f"{c1}_{c2}_add"
+            X[col] = X[c1] + X[c2]
+            new_cols.append(col)
+        
+        if "sub" in ops:
+            col = f"{c1}_{c2}_sub"
+            X[col] = X[c1] - X[c2]
+            new_cols.append(col)
     
-    print(f"Added {len(new_cols)} ratio features")
+    print(f"Added {len(new_cols)} numerical interaction features")
     return X, new_cols
 
 def create_cat_bigrams(X, cat_cols):
