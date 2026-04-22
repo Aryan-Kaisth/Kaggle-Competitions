@@ -69,11 +69,11 @@ LGBM_PARAMS = {
 CATBOOST_PARAMS = {
     "loss_function": "MultiClass",
     "eval_metric": "TotalF1",
-    "iterations": 10_000,
+    "iterations": 5000,
     "learning_rate": 0.01,
     "random_seed": SEED,
     "auto_class_weights": "Balanced",
-    "l2_leaf_reg": 3.0,
+    "l2_leaf_reg": 2.0,
     "depth": 6,
     "bootstrap_type": "Bayesian",
     "bagging_temperature": 1.0,
@@ -112,10 +112,8 @@ HISTGBM_PARAMS = {
     "max_iter": 1000,
     "max_leaf_nodes": 31,
     "max_depth": 6,
-    "min_samples_leaf": 20,
     "l2_regularization": 0.05,
-    "max_features": 0.6,
-    "max_bins": 255,
+    "max_features": 0.8,
     "early_stopping": False,
     "validation_fraction": None,
     "verbose": 0,
@@ -126,16 +124,15 @@ HISTGBM_PARAMS = {
 
 # --- ExtraTrees ---
 EXTRATREES_PARAMS = {
-    "n_estimators": 3000,
+    "n_estimators": 1000,
     "criterion": "gini",
-    "max_depth": 6,
-    "min_samples_split": 5,
-    "min_samples_leaf": 2,
+    "max_depth": 8,
     "max_features": "sqrt",
     "bootstrap": False,
     "n_jobs": -1,
     "random_state": SEED,
-    "class_weight": "balanced"
+    "verbose": 0,
+    "class_weight": None
 }
 
 # --- LogisticRegression ---
@@ -144,7 +141,7 @@ LOGISTIC_PARAMS = {
     "class_weight": 'balanced',
     "random_state": SEED,
     "solver": "lbfgs",
-    "max_iter": 6000,
+    "max_iter": 10000,
     "verbose": 0
 }
 
