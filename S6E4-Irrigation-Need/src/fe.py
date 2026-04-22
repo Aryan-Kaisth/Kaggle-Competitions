@@ -102,3 +102,19 @@ def create_polynomial_features(X, num_cols, degree=2):
     
     print(f"Added {len(new_cols)} polynomial features")
     return X, new_cols
+
+def create_digit_features(df, M, num_cols):
+    df = df.copy()
+    
+    for c in num_cols:
+        for k in range(-4, 3):
+            df[f"{c}_digit{k}"] = (df[c] // (10**k) % 10).astype("int8")
+        
+        if M[c] < 10:
+            df[c] = df[c].round(3)
+        elif M[c] < 100:
+            df[c] = df[c].round(2)
+        else:
+            df[c] = df[c].round(1)
+    
+    return df
