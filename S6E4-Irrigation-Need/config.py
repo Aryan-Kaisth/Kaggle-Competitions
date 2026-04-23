@@ -109,9 +109,9 @@ CATBOOST_ORDERED_PARAMS = {
 HISTGBM_PARAMS = {
     "loss": "log_loss",
     "learning_rate": 0.01,
-    "max_iter": 1000,
+    "max_iter": 5000,
     "max_leaf_nodes": 31,
-    "max_depth": 6,
+    "max_depth": 3,
     "l2_regularization": 0.05,
     "max_features": 0.8,
     "early_stopping": False,
@@ -119,7 +119,7 @@ HISTGBM_PARAMS = {
     "verbose": 0,
     "random_state": SEED,
     "categorical_features": "from_dtype",
-    "class_weight": None
+    "class_weight": 'balanced'
 }
 
 # --- ExtraTrees ---
