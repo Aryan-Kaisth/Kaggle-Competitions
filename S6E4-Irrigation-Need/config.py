@@ -43,6 +43,21 @@ N_FOLDS = 5
 SEED = 42
 SEED_LIST = [42, 71, 84, 69, 91]
 
+# --- XGB ---
+XGB_PARAMS = {
+    'objective': 'multi:softprob',
+    'num_class': 3,
+    'learning_rate': 0.05,
+    'max_depth': 3,
+    'subsample': 0.9,
+    'colsample_bytree': 0.8,
+    'max_bin': 1100,
+    'eval_metric': 'mlogloss',
+    'device': 'cuda',
+    'nthread': -1,
+    'seed': SEED
+}
+
 # --- LightGBM ---
 LGBM_PARAMS = {
     "objective": "multiclass",
@@ -170,7 +185,7 @@ XGB_TD_PARAMS = {
     'n_repeats': 1,
     'val_fraction': 0.0,
     'n_threads': 12,
-    'verbosity': 0,
+    'verbosity': 1,
     'train_metric_name': 'cross_entropy',
     'val_metric_name': '1-balanced_accuracy',
     'n_estimators': None,
@@ -208,12 +223,12 @@ LGBM_TD_PARAMS = {
 
 Resnet_RTDL_D_PARAMS = {
     "module_d_embedding": None,
-    "module_d": 64,
+    "module_d": 256,
     "module_d_hidden_factor": 2,
-    "module_n_layers": 8,
+    "module_n_layers": 6,
     "verbose": 1,
     "max_epochs": 32,
-    "batch_size": 512,
+    "batch_size": 1028,
     "es_patience": 5,
     "use_checkpoints": True,
     "device": 'cuda',
@@ -261,7 +276,7 @@ TabM_D_PARAMS = {
     "batch_size": 512,
     "lr": None,
     "weight_decay": None,
-    "n_epochs": 24,
+    "n_epochs": 32,
     "patience": 16,
 
     # model size
