@@ -139,15 +139,15 @@ HISTGBM_PARAMS = {
 
 # --- ExtraTrees ---
 EXTRATREES_PARAMS = {
-    "n_estimators": 1000,
+    "n_estimators": 5000,
     "criterion": "gini",
-    "max_depth": 8,
+    "max_depth": 3,
     "max_features": "sqrt",
     "bootstrap": False,
     "n_jobs": -1,
     "random_state": SEED,
     "verbose": 0,
-    "class_weight": None
+    "class_weight": 'balanced'
 }
 
 # --- LogisticRegression ---
@@ -250,9 +250,9 @@ RealMLP_TD_PARAMS = {
     "n_repeats": 1,
     "val_fraction": 0.0,
     "n_threads": 12,
-    "verbosity": 0,
+    "verbosity": 1,
     "val_metric_name": '1-balanced_accuracy',
-    "n_epochs": 5
+    "n_epochs": 48
 }
 
 TabM_D_PARAMS = {
