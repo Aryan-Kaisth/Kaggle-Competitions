@@ -60,7 +60,6 @@ def reduce_mem_usage(df: pd.DataFrame, inplace: bool = False) -> pd.DataFrame:
     numerics = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
     
     start_mem = df.memory_usage(deep=True).sum() / 1024 ** 2
-    print(f"Memory before: {start_mem:.2f} MB")
 
     for col in df.columns:
         col_type = df[col].dtype
@@ -85,7 +84,6 @@ def reduce_mem_usage(df: pd.DataFrame, inplace: bool = False) -> pd.DataFrame:
                 df[col] = df[col].astype(np.float32)
 
     end_mem = df.memory_usage(deep=True).sum() / 1024 ** 2
-    print(f"Memory after: {end_mem:.2f} MB")
     print(f"Reduced by: {start_mem - end_mem:.2f} MB ({100 * (start_mem - end_mem) / start_mem:.1f}%)")
 
     return df
