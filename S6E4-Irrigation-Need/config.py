@@ -8,6 +8,7 @@ RAW_TEST = os.path.join("data", "raw", "test.csv")
 OOF_DIR = os.path.join("artifacts", "oof")
 SUBMISSIONS_DIR = os.path.join("artifacts", "submissions")
 TEST_PROBA_DIR = os.path.join("artifacts", "test_proba")
+ENSEMBLE_DIR = 'ensemble_final'
 
 # --- Extras ---
 TARGET = "irrigation_need"
