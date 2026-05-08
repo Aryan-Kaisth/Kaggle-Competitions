@@ -2,8 +2,7 @@ import pandas as pd
 import random
 import os
 import numpy as np
-from sklearn.metrics import log_loss
-import joblib
+from sklearn.metrics import log_loss, roc_auc_score
 
 def read_csv_file(path: str) -> pd.DataFrame:
     print(f"Reading file from: {path}")
@@ -19,21 +18,6 @@ def seed_everything(seed: int) -> None:
     np.random.seed(seed)
     os.environ["PYTHONHASHSEED"] = str(seed)
     print(f'Seed set to {seed}')
-
-def compute_logloss(y_true, probs):
-    return log_loss(y_true, probs)
-
-def load_object(path: str) -> object:
-    with open(path, "rb") as file_obj:
-        obj = joblib.load(file_obj)
-        print(f'Object loaded from {path}')
-        return obj
-
-def save_object(obj: object, path: str) -> None:
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "wb") as file_obj:
-        joblib.dump(obj, file_obj)
-        print(f'Object saved to {path}')
 
 def reduce_mem_usage(df: pd.DataFrame, inplace: bool = False) -> pd.DataFrame:
     if not inplace:
