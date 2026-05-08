@@ -5,12 +5,10 @@ import numpy as np
 from sklearn.metrics import log_loss, roc_auc_score
 
 def read_csv_file(path: str) -> pd.DataFrame:
-    print(f"Reading file from: {path}")
     return pd.read_csv(path).rename(columns=str.lower)
 
 def save_csv_file(df: pd.DataFrame, path: str) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    print(f"Saving file to: {path}")
     df.to_csv(path, index=False)
 
 def seed_everything(seed: int) -> None:
@@ -50,6 +48,5 @@ def reduce_mem_usage(df: pd.DataFrame, inplace: bool = False) -> pd.DataFrame:
                 df[col] = df[col].astype(np.float32)
 
     end_mem = df.memory_usage(deep=True).sum() / 1024 ** 2
-    print(f"Reduced by: {start_mem - end_mem:.2f} MB ({100 * (start_mem - end_mem) / start_mem:.1f}%)")
 
     return df
