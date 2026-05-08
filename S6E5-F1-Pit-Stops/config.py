@@ -12,6 +12,22 @@ TEST_PROBA_DIR = Path("artifacts", "test_proba")
 # --- Features ---
 TARGET = "pitnextlap"
 ID_COL = "id"
+BASE_CAT_COLS = ['driver', 'compound', 'race']
+
+BASE_NUM_COLS = [
+    'year', 
+    'pitstop', 
+    'lapnumber', 
+    'stint', 
+    'tyrelife', 
+    'position', 
+    'laptime (s)', 
+    'laptime_delta', 
+    'cumulative_degradation', 
+    'raceprogress', 
+    'position_change', 
+    'pitnextlap'
+]
 
 N_FOLDS = 5
 SEED = 42
