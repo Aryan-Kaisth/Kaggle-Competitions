@@ -12,6 +12,7 @@ TEST_PROBA_DIR = Path("artifacts", "test_proba")
 # --- Features ---
 TARGET = "pitnextlap"
 ID_COL = "id"
+
 BASE_CAT_COLS = ['driver', 'compound', 'race']
 
 BASE_NUM_COLS = [
@@ -25,10 +26,18 @@ BASE_NUM_COLS = [
     'laptime_delta', 
     'cumulative_degradation', 
     'raceprogress', 
-    'position_change', 
-    'pitnextlap'
+    'position_change'
 ]
 
 N_FOLDS = 5
 SEED = 42
 SEED_LIST = [42, 71, 84, 69, 91]
+
+# --- Logistic Regression ---
+LR_PARAMS = {
+    "class_weight": 'balanced',
+    "random_state": SEED,
+    "solver": "lbfgs",
+    "max_iter": 5000,
+    "verbose": 0
+}
