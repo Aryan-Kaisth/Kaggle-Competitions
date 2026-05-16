@@ -95,3 +95,122 @@ XGBM_PARAMS = {
     'class_weight': 'balanced',
     'early_stopping_rounds': 200 
 }
+
+# --- Resnet ---
+Resnet_PARAMS = {
+    "module_d_embedding": None,
+    "module_d": 256,
+    "module_d_hidden_factor": 2,
+    "module_n_layers": 6,
+    "verbose": 1,
+    "max_epochs": 32,
+    "batch_size": 1024,
+    "es_patience": 5,
+    "use_checkpoints": True,
+    "device": 'cuda',
+    "random_state": SEED,
+    "n_cv": 1,
+    "n_refit": 0,
+    "n_repeats": 1,
+    "n_threads": 12,
+    "tmp_folder": 'tmp',
+    "verbosity": 1,
+    'val_fraction': 0.0
+}
+
+# --- RealMLP ---
+REALMLP_PARAMS = {
+    'random_state': SEED,
+    'verbosity': 2,
+    'val_metric_name': '1-auc_ovr',
+
+    'n_ens': 24,
+    'n_epochs': 6,
+    'batch_size': 256,
+    'use_early_stopping': False,
+    'early_stopping_additive_patience': 10,
+    'early_stopping_multiplicative_patience': 1,
+
+    'lr': 0.01,
+    'wd': 0.016,
+    'sq_mom': 0.99,
+    'lr_sched': 'lin_cos_log_15',
+    'first_layer_lr_factor': 0.25,
+
+    'embedding_size': 6,
+    'max_one_hot_cat_size': 18,
+    'hidden_sizes': [512, 256, 128],
+    'act': 'silu',
+    'p_drop': 0.05,
+    'p_drop_sched': 'invsqrtp1e-3',
+
+    'plr_hidden_1': 16,
+    'plr_hidden_2': 8,
+    'plr_act_name': 'gelu',
+    'plr_lr_factor': 0.1151,
+    'plr_sigma': 2.33,
+
+    'ls_eps': 0.01,
+    'ls_eps_sched': 'sqrt_cos',
+
+    'add_front_scale': False,
+    'bias_init_mode': 'neg-uniform-dynamic-2',
+    'tfms': ['one_hot', 'median_center', 'robust_scale',
+             'smooth_clip', 'embedding', 'l2_normalize'],
+}
+
+CATGBM_PARAMS = {
+    'iterations':10_000,
+    'learning_rate':0.01,
+    'depth': 6,
+    'l2_leaf_reg':8.0,
+    'random_strength':0.8,
+    'bootstrap_type':"Bayesian",
+    'grow_policy': 'SymmetricTree',
+    'bagging_temperature':0.35,
+    'loss_function':"Logloss",
+    'eval_metric':"AUC",
+    'task_type':"GPU",
+    'random_seed':SEED,
+    'early_stopping_rounds':100,
+    'use_best_model': True,
+    'border_count': 255,
+    "auto_class_weights": "Balanced"
+}
+
+TABM_PARAMS = {
+    "device": 'cuda',
+    "random_state": SEED,
+    "n_cv": 1,
+    "n_refit": 0,
+    "n_repeats": 1,
+    "val_fraction": 0.0,
+    "n_threads": 12,
+    "tmp_folder": None,
+    "verbosity": 1,
+
+    # architecture
+    "arch_type": 'tabm',
+    "num_emb_type": 'pwl',
+    "num_emb_n_bins": 48,
+
+    # training
+    "batch_size": 1028,
+    "lr": None,
+    "weight_decay": None,
+    "n_epochs": 5,
+    "patience": 5,
+
+    # model size
+    "d_embedding": None,
+    "d_block": 256,
+    "n_blocks": 6,
+    "dropout": None,
+    "compile_model": False,
+    "allow_amp": True,
+    "tfms": None,
+    "gradient_clipping_norm": None,
+    "share_training_batches": False,
+    "val_metric_name": '1-auc_ovr',
+    "train_metric_name": None
+}
