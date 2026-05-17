@@ -2,3 +2,4 @@
 *.pyc
 mlflow.db
 catboost_info
+.env
