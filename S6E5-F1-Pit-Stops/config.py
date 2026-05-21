@@ -60,10 +60,12 @@ HISTGBM_PARAMS = {
 
 # --- LightGBM ---
 LGBM_PARAMS = {
-    'boosting_type': 'goss',
+    "boosting_type": "gbdt",
+    'data_sample_strategy': 'goss',
     'objective': 'binary',
     'metric': 'auc',
-    'num_leaves': 31,
+    'num_leaves': 256,
+    'min_data_in_leaf':40,
     'max_depth': -1,
     'learning_rate': 0.01, # Lower Lr for stable training
     'n_estimators': 10_000,
@@ -71,7 +73,7 @@ LGBM_PARAMS = {
     'random_state': SEED,
     'n_jobs': -1,
     'importance_type': 'gain',
-    'colsample_bytree': 0.8,
+    'colsample_bytree': 0.5,
     'verbose': -1
 }
 
@@ -213,4 +215,45 @@ TABM_PARAMS = {
     "share_training_batches": False,
     "val_metric_name": '1-auc_ovr',
     "train_metric_name": None
+}
+
+# FTT
+FTT_PARAMS = {
+    "module_d_token": 4,
+    "module_d_ffn_factor": None,
+    "module_n_layers": 6,
+    "module_n_heads": None,
+    "module_token_bias": None,
+    "module_attention_dropout": None,
+    "module_ffn_dropout": None,
+    "module_residual_dropout": None,
+    "module_activation": None,
+    "module_prenormalization": True,
+    "module_initialization": None,
+    "module_kv_compression": None,
+    "module_kv_compression_sharing": None,
+    "verbose": None,
+    "max_epochs": 8,
+    "batch_size": 512,
+    "optimizer": None,
+    "optimizer_weight_decay": None,
+    "es_patience": None,
+    "lr": None,
+    "lr_scheduler": None,
+    "lr_patience": None,
+    "use_checkpoints": True,
+    "transformed_target": None,
+    "tfms": None,
+    "quantile_output_distribution": None,
+    "val_metric_name": None,
+    "device": 'cuda',
+    "random_state": SEED,
+    "n_cv": 1,
+    "n_refit": 0,
+    "n_repeats": 1,
+    "val_fraction": 0.0,
+    "n_threads": None,
+    "tmp_folder": None,
+    "verbosity": 0,
+    "calibration_method": None
 }
