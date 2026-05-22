@@ -4,3 +4,4 @@ mlflow.db
 catboost_info
 .env
 mlruns
+AutogluonModels
