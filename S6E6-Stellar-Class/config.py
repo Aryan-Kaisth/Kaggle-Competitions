@@ -12,6 +12,9 @@ N_CLASSES = 3
 
 OOF_PROBA_DIR = Path(r"artifacts\oof_proba")
 TEST_PROBA_DIR = Path(r"artifacts\test_proba")
+SUBMISSION_DIR = Path(r"artifacts\submissions")
+
+PROB_COLS = ["class_0", "class_1", "class_2"]
 
 # Logistic Regression
 LR_PARAMS = {
@@ -96,4 +99,57 @@ RESNET_PARAMS = {
     "val_metric_name": "cross_entropy",
     "verbosity": 1,
     'val_fraction': 0.0
+}
+
+# --- CatBoost ---
+CATBOOST_PARAMS = {
+    "loss_function": "MultiClass",
+    "eval_metric": "BalancedAccuracy",
+    "iterations": 4000,
+    "learning_rate": 0.03,
+    "random_seed": SEED,
+    "auto_class_weights": "Balanced",
+    "bootstrap_type": "Bayesian",
+    "early_stopping_rounds": 100,
+    "task_type": "GPU",
+    "verbose": 0,
+    "use_best_model": True
+}
+
+# TABM
+TABM_PARAMS = {
+    "device": 'cuda',
+    "random_state": SEED,
+    "n_cv": 1,
+    "n_refit": 0,
+    "n_repeats": 1,
+    "val_fraction": 0.0,
+    "n_threads": 12,
+    "tmp_folder": None,
+    "verbosity": 1,
+
+    # architecture
+    "arch_type": 'tabm',
+    "num_emb_type": 'pwl',
+    "num_emb_n_bins": 48,
+
+    # training
+    "batch_size": 256,
+    "lr": None,
+    "weight_decay": None,
+    "n_epochs": 5,
+    "patience": 5,
+
+    # model size
+    "d_embedding": None,
+    "d_block": 256,
+    "n_blocks": 6,
+    "dropout": None,
+    "compile_model": False,
+    "allow_amp": True,
+    "tfms": None,
+    "gradient_clipping_norm": None,
+    "share_training_batches": False,
+    "val_metric_name": '1-auc_ovr',
+    "train_metric_name": None
 }
