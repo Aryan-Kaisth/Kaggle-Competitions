@@ -104,16 +104,17 @@ RESNET_PARAMS = {
 # --- CatBoost ---
 CATBOOST_PARAMS = {
     "loss_function": "MultiClass",
-    "eval_metric": "BalancedAccuracy",
+    "eval_metric": "TotalF1",
     "iterations": 4000,
     "learning_rate": 0.03,
     "random_seed": SEED,
     "auto_class_weights": "Balanced",
     "bootstrap_type": "Bayesian",
     "early_stopping_rounds": 100,
-    "task_type": "GPU",
+    "task_type": "CPU",
     "verbose": 0,
-    "use_best_model": True
+    "use_best_model": True,
+    "boosting_type": "Ordered"
 }
 
 # TABM
@@ -131,7 +132,7 @@ TABM_PARAMS = {
     # architecture
     "arch_type": 'tabm',
     "num_emb_type": 'pwl',
-    "num_emb_n_bins": 48,
+    "num_emb_n_bins": 128,
 
     # training
     "batch_size": 256,
@@ -149,7 +150,7 @@ TABM_PARAMS = {
     "allow_amp": True,
     "tfms": None,
     "gradient_clipping_norm": None,
-    "share_training_batches": False,
+    "share_training_batches": True,
     "val_metric_name": '1-auc_ovr',
     "train_metric_name": None
 }
