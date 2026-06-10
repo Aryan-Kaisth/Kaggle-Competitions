@@ -14,7 +14,7 @@ OOF_PROBA_DIR = Path(r"artifacts\oof_proba")
 TEST_PROBA_DIR = Path(r"artifacts\test_proba")
 SUBMISSION_DIR = Path(r"artifacts\submissions")
 
-PROB_COLS = ["class_0", "class_1", "class_2"]
+PROB_COLS = ['0', '1', '2']
 
 # Logistic Regression
 LR_PARAMS = {
@@ -49,8 +49,8 @@ LGBM_PARAMS = {
     "metric": "multi_logloss",
     "num_leaves": 31,
     'max_depth': -1,
-    'learning_rate': 0.01,
-    'n_estimators': 10_000,
+    'learning_rate': 0.03,
+    'n_estimators': 5_000,
     'class_weight': 'balanced',
     'random_state': SEED,
     'n_jobs': -1,
