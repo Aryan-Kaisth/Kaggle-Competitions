@@ -14,8 +14,6 @@ OOF_PROBA_DIR = Path(r"artifacts\oof_proba")
 TEST_PROBA_DIR = Path(r"artifacts\test_proba")
 SUBMISSION_DIR = Path(r"artifacts\submissions")
 
-PROB_COLS = ['0', '1', '2']
-
 # Logistic Regression
 LR_PARAMS = {
     "class_weight": "balanced",
