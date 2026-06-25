@@ -64,24 +64,25 @@ XGB_PARAMS = {
     'eval_metric': 'mlogloss',
     'tree_method': 'hist',
     'device': 'cuda',
-    'learning_rate': 0.03,
+    'learning_rate': 0.01,
     'n_estimators': 5000,
-    'max_depth': 6,
-    'subsample': 0.8,
-    'colsample_bytree': 0.8,
+    'max_depth': 8,
+    'subsample': 0.75,
+    'colsample_bytree': 0.7,
+    'colsample_bylevel': 0.8,
     'random_state': SEED,
     'n_jobs': -1,
     'verbosity': 0,
     'class_weight': 'balanced',
-    'early_stopping_rounds': 100,
+    'early_stopping_rounds': 150,
     "enable_categorical": True
 }
 
 # ResNet
 RESNET_PARAMS = {
     "module_d": 256,
-    "module_d_hidden_factor": 1,
-    "module_n_layers": 2,
+    "module_d_hidden_factor": 2,
+    "module_n_layers": 4,
     "verbose": 1,
     "max_epochs": 16,
     "batch_size": 1024,
@@ -130,24 +131,24 @@ TABM_PARAMS = {
     # architecture
     "arch_type": 'tabm',
     "num_emb_type": 'pwl',
-    "num_emb_n_bins": 128,
+    "num_emb_n_bins": None,
 
     # training
     "batch_size": 256,
     "lr": None,
     "weight_decay": None,
-    "n_epochs": 5,
+    "n_epochs": 32,
     "patience": 5,
 
     # model size
     "d_embedding": None,
-    "d_block": 256,
+    "d_block": 1024,
     "n_blocks": 6,
-    "dropout": None,
+    "dropout": True,
     "compile_model": False,
     "allow_amp": True,
     "tfms": None,
-    "gradient_clipping_norm": None,
+    "gradient_clipping_norm": True,
     "share_training_batches": True,
     "val_metric_name": '1-auc_ovr',
     "train_metric_name": None
