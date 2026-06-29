@@ -66,7 +66,7 @@ XGB_PARAMS = {
     'device': 'cuda',
     'learning_rate': 0.01,
     'n_estimators': 5000,
-    'max_depth': 8,
+    'max_depth': 3,
     'subsample': 0.75,
     'colsample_bytree': 0.7,
     'colsample_bylevel': 0.8,
